@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.diegogarcia.webapp.biblioteca.model.Empleados;
 import com.diegogarcia.webapp.biblioteca.service.EmpleadoService;
+
 
 @Controller
 @RestController
@@ -59,4 +61,38 @@ public class EmpleadoController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    // EDITAR EMPLEADOS
+    @PutMapping("/{id}")
+    public ResponseEntity <Map<String, Boolean>> editarEmpleado(@PathVariable Long id, Empleados empleadoNuevo){
+        Map<String, Boolean> response = new HashMap<>();
+        try {
+            Empleados empleado = empleadoService.buscarEmpleados(id);
+            empleado.setNombre(empleadoNuevo.getNombre());
+            empleado.setApellido(empleadoNuevo.getApellido());
+            empleado.setDpi(empleadoNuevo.getDpi());
+            empleado.setDireccion(empleadoNuevo.getDireccion());
+            empleado.setTelefono(empleadoNuevo.getTelefono());
+            response.put("Se ha editado el empleado con exito", Boolean.TRUE);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("Se ha editado el empleado con exito", Boolean.FALSE);
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    // ELIMINAR EMPLEADO
+    @DeleteMapping("/{id}")
+    public ResponseEntity <Map<String, Boolean>> eliminarEmpleado(@PathVariable Long id){
+        Map<String, Boolean> response = new HashMap<>();
+        try {
+            Empleados empleado = empleadoService.buscarEmpleados(id);
+            empleadoService.eliminarEmpleado(empleado);
+            response.put("Se elimino el Empleado con exito", Boolean.TRUE);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("Se elimino el empleado con exito", Boolean.FALSE);
+            return ResponseEntity.badRequest().body(response);
+        }
+    } 
 }
