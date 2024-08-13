@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,13 +50,19 @@ public class EmpleadoController {
     }
 
     // AGREGAR EMPLEADO
-    @PutMapping("/")
+    @PostMapping("/")
     public ResponseEntity<Map<String, Boolean>> agregarEmpelado(@RequestBody Empleados empleado){
         Map<String, Boolean> response = new HashMap<>();
         try {
-            empleadoService.guardarEmpleado(empleado);
-            response.put("Se agrego el empleado con exito", Boolean.TRUE);
-            return ResponseEntity.ok(response);
+            if(!empleadoService.verificarDpiDupl(empleado)){
+                empleadoService.guardarEmpleado(empleado);
+                response.put("Se agrego el empleado con exito", Boolean.TRUE);
+                return ResponseEntity.ok(response);
+            }else{
+                response.put("El dpi del Empleado se encuentra duplicado", Boolean.FALSE);
+                return ResponseEntity.badRequest().body(response);
+            }
+            
         } catch (Exception e) {
             response.put("Se agrego el empleado con exito", Boolean.FALSE);
             return ResponseEntity.badRequest().body(response);
@@ -68,13 +75,18 @@ public class EmpleadoController {
         Map<String, Boolean> response = new HashMap<>();
         try {
             Empleados empleado = empleadoService.buscarEmpleados(id);
-            empleado.setNombre(empleadoNuevo.getNombre());
-            empleado.setApellido(empleadoNuevo.getApellido());
-            empleado.setDpi(empleadoNuevo.getDpi());
-            empleado.setDireccion(empleadoNuevo.getDireccion());
-            empleado.setTelefono(empleadoNuevo.getTelefono());
-            response.put("Se ha editado el empleado con exito", Boolean.TRUE);
-            return ResponseEntity.ok(response);
+            if (!empleadoService.verificarDpiDupl(empleadoNuevo)) {
+                empleado.setNombre(empleadoNuevo.getNombre());
+                empleado.setApellido(empleadoNuevo.getApellido());
+                empleado.setDpi(empleadoNuevo.getDpi());
+                empleado.setDireccion(empleadoNuevo.getDireccion());
+                empleado.setTelefono(empleadoNuevo.getTelefono());
+                response.put("Se ha editado el empleado con exito", Boolean.TRUE);
+                return ResponseEntity.ok(response);
+            }else{
+                response.put("El dpi se encuentra duplicado", Boolean.FALSE);
+                return ResponseEntity.badRequest().body(response); 
+            }
         } catch (Exception e) {
             response.put("Se ha editado el empleado con exito", Boolean.FALSE);
             return ResponseEntity.badRequest().body(response);
