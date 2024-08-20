@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.diegogarcia.webapp.biblioteca.model.Libro;
 import com.diegogarcia.webapp.biblioteca.model.Prestamo;
 import com.diegogarcia.webapp.biblioteca.service.PrestamoService;
 
@@ -47,7 +48,7 @@ public class PrestamoController {
     public ResponseEntity <Map<String, Boolean>> agregarPrestamo(@RequestBody  Prestamo prestamo) {
         Map<String, Boolean> response = new HashMap<>();
         try {
-            if(prestamoService.prestamoVigente(prestamo)){
+            if(!prestamoService.prestamoVigente(prestamo)){
                 prestamoService.guardPrestamo(prestamo);
                 response.put("Se ha generado el Prestamo con exito", Boolean.TRUE);
                 return ResponseEntity.ok(response);
@@ -80,7 +81,7 @@ public class PrestamoController {
        Map<String, Boolean> response = new HashMap<>();
        try {
         Prestamo prestamo = prestamoService.buscarPrestamoPorId(id);
-        if(prestamoService.prestamoVigente(prestamo)){
+        if(!prestamoService.prestamoVigente(prestamo)){
             prestamo.setLibro(prestamoNuevo.getLibro());
             prestamo.setCliente(prestamoNuevo.getCliente());
             prestamo.setEmpleado(prestamoNuevo.getEmpleado());
