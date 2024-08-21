@@ -79,25 +79,25 @@ public class PrestamoController {
    @PutMapping("/{id}")
    public ResponseEntity <Map<String, Boolean>> editarPrestamo(@PathVariable Long id,  Prestamo prestamoNuevo) {
        Map<String, Boolean> response = new HashMap<>();
-       try {
-        Prestamo prestamo = prestamoService.buscarPrestamoPorId(id);
-        if(!prestamoService.prestamoVigente(prestamo)){
-            prestamo.setLibro(prestamoNuevo.getLibro());
-            prestamo.setCliente(prestamoNuevo.getCliente());
-            prestamo.setEmpleado(prestamoNuevo.getEmpleado());
-            prestamo.setFechaPrestamo(prestamoNuevo.getFechaPrestamo());
-            prestamo.setFechaDevolucion(prestamoNuevo.getFechaDevolucion());
-            prestamo.setVigencia(prestamoNuevo.getVigencia());
-            response.put("Se editaron los datos del Prestamo con exito", Boolean.TRUE);
-            return ResponseEntity.ok(response);
-        }else{
+        try{
+            Prestamo prestamo = prestamoService.buscarPrestamoPorId(id);
+            if(!prestamoService.prestamoVigente(prestamo)){
+                prestamo.setLibro(prestamoNuevo.getLibro());
+                prestamo.setCliente(prestamoNuevo.getCliente());
+                prestamo.setEmpleado(prestamoNuevo.getEmpleado());
+                prestamo.setFechaPrestamo(prestamoNuevo.getFechaPrestamo());
+                prestamo.setFechaDevolucion(prestamoNuevo.getFechaDevolucion());
+                prestamo.setVigencia(prestamoNuevo.getVigencia());
+                response.put("Se editaron los datos del Prestamo con exito", Boolean.TRUE);
+                return ResponseEntity.ok(response);
+            }else{
+                response.put("No se lograron editar los datos con exito", Boolean.FALSE);
+                return ResponseEntity.badRequest().body(response);
+            }
+        } catch (Exception e) {
             response.put("No se lograron editar los datos con exito", Boolean.FALSE);
-        return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.badRequest().body(response);
         }
-    } catch (Exception e) {
-        response.put("No se lograron editar los datos con exito", Boolean.FALSE);
-        return ResponseEntity.badRequest().body(response);
-       }
    } 
     
    @DeleteMapping("/{id}")
